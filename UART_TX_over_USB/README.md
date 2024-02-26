@@ -1,10 +1,10 @@
 # Introduction
 
 The application will blink a LED and it will transmit bytes over the USB FTDI UART!
-The Lattice iceStick has a FTDI chip that allows it to establish a UART connection over The
-USB connection that is also used to programm the icestick.
-This example shows how to use this FTDI chip. (IT is very simple, there is a peripheral pin where you can send
-a signal to and it will be transmitted over the FTDI chip
+The Lattice IceStick has a FTDI chip that allows it to establish a UART connection over the
+USB connection that is also used to programm the IceStick.
+This example shows how to use this FTDI chip. (It is actually surprisingly very simple! 
+There is a peripheral pin where you can send a signal to and it will be transmitted over the FTDI chip
 
 # Credit
 
@@ -27,7 +27,7 @@ REM C:\Users\wolfg\.apio\packages\tools-oss-cad-suite\bin\yosys.exe -p "synth_ic
 C:\Users\wolfg\Downloads\oss-cad-suite\bin\yosys.exe -p "synth_ice40 -top top -blif build/uart.blif -json build/uart.json" top.v uart_trx.v
 ```
 
-apio drivers:
+APIO drivers:
 
 Run a cmd as an administrator
 ```
