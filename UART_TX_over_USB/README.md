@@ -34,10 +34,11 @@ Run a cmd as an administrator
 apio drivers --ftdi-enable
 ```
 
-In Zadig: Options > List all Devices
-Find "Dual RS232-HS (Interface 0)"
-select the libusbk (v3.0.7.0) driver from the drop-down and click "Replace Driver"
-"The driver was installed successfully!" > Close
+In Zadig: 
+* Options > List all Devices
+* Find "Dual RS232-HS (Interface 0)"
+* Select the libusbk (v3.0.7.0) driver from the drop-down and click "Replace Driver"
+* "The driver was installed successfully!" > Close
 ```
 apio system --lsftdi
 ```
