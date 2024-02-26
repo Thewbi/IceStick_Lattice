@@ -40,15 +40,10 @@ module top (
     reg [7:0] uart_txbyte = ASCII_0;
 
     // this flag determines, weather the UART does send data or not
-    //reg uart_send = 1'b0;
-    //wire uart_send = 1'b1;
     wire uart_send;
 
     // transmission done signal. The UART outputs a high value, when the transmission is done
     wire uart_txed;
-    //reg uart_txed_reg;
-
-    //assign uart_txed_reg = uart_txed;
 
     /* LED register */
     reg ledval = 0;
@@ -91,145 +86,6 @@ module top (
 
     end
 
-
-/*
-    //reg [31:0] chars_transmitted = 1'b0;
-
-    reg disable_uart = 1'b0;
-    assign uart_send = !disable_uart;
-
-    // https://digilent.com/blog/how-to-code-a-state-machine-in-verilog/
-    localparam state_wait = 3'b000;
-    localparam state_send = 3'b001;
-
-    reg [2:0] present_state = state_send;
-    reg [2:0] next_state = state_wait;
-
-    always @ (present_state) begin
-        
-        case (present_state)
-
-            state_wait:
-            begin
-                next_state = state_send;
-                disable_uart <= 1'b1;
-            end
-
-            state_send:
-            begin
-                next_state = state_wait;
-                disable_uart <= 1'b0;
-            end
-
-            //default:
-           // begin
-            //    next_state = state_send;
-            //    disable_uart <= 1'b1;
-            //end
-
-        endcase
-
-    end
-
-    always @ (posedge clk_1) begin
-    //always @ (clk_1 or chars_transmitted) begin
-    //always @ (present_state) begin
-
-        if (present_state == state_wait) begin
-            //disable_uart <= 1'b1;
-            //chars_transmitted = 0;
-        end
-
-        if (present_state == state_send) begin
-            //disable_uart <= 1'b0;
-
-            //if (chars_transmitted > 1) begin
-            //    disable_uart <= 1'b1;
-            //end else begin
-            //    disable_uart <= 1'b0;
-            //end 
-        end
-
-    end
-
-    reg uart_txed_reg;
-
-    //always @ (clk_1 or uart_txed_reg) begin
-    //always @ (posedge clk_1) begin
-    //always @ (uart_txed) begin
-    //always @ (posedge clk_1) begin    
-    //    present_state = next_state;
-        //disable_uart = ~disable_uart;
-    //end
-
-    //always @(posedge uart_txed) begin
-        //disable_uart <= 1'b1;
-        //chars_transmitted = chars_transmitted + 1;
-    //    uart_txed_reg <= ~uart_txed_reg;
-    //  end
-
-    always @(uart_txed or clk_1) begin
-        //present_state = state_wait;
-
-        case (present_state)
-
-            state_wait:
-            begin
-                present_state = state_send;
-            end
-
-            state_send:
-            begin
-                present_state = state_wait;
-            end
-
-        endcase
-    end
-*/
-
-    //wire transmit_en;
-    //reg transmit_en_reg = 1'b0;
-    //reg transmit_en_reg = 1'b1;
-    //assign transmit_en = transmit_en_reg;
-
-    //reg disable_uart = 1'b0;
-    //always @(uart_txed or transmit_en) begin
-
-        //disable_uart <= 1'b1;
-        //disable_uart <= 1'b0;
-
-        //transmit_en_reg = 1'b0;
-
-        // if (disable_uart == 1) begin
-        //     // deactivate sending data
-        //     //uart_send <= 1'b0;
-        //     disable_uart <= 1'b0;
-        // end else begin
-        //     // activate sending data
-        //     //uart_send <= 1'b1;
-        //     // when a character has been transmitted, turn the UART off so no more data is sent
-        //     disable_uart <= 1'b1;
-        // end
-
-        //disable_uart <= 1'b0;
-        //if (uart_txed == 1'b1) begin
-        //    disable_uart <= 1'b1;
-        //end else begin
-        //    disable_uart <= 1'b0;
-        //end
-        
-        // if (transmit_en == 1'b1) begin
-        //     disable_uart <= 1'b0;
-        //     //transmit_en_reg <= 1'b0;
-        // end
-        //uart_send <= 1'b0;
-        //disable_uart <= ~disable_uart;
-       
-    //end
-
-    //assign uart_txed = !disable_uart;
-    //assign uart_send = !disable_uart;
-
     /* Increment ASCII digit and blink LED */
     always @(posedge clk_1) begin
 
@@ -245,13 +101,6 @@ module top (
 
         toggle_second <= ~toggle_second;
 
-        //disable_uart <= 1'b1;
-        //uart_send <= 1'b1;
-
-        //disable_uart <= 1'b0;
-
-        //transmit_en_reg = 1'b1;
-        //transmit_en_reg = ~transmit_en_reg;
     end
 
     reg uart_send_reg = 1'b0;
@@ -278,11 +127,5 @@ module top (
         end
 
     end
-
-    //always @(posedge uart_txed) begin
-        //disable_uart <= 1'b1;
-        //chars_transmitted = chars_transmitted + 1;
-    //    uart_txed_reg <= ~uart_txed_reg;
-    //  end
 
 endmodule
