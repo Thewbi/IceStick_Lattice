@@ -1,10 +1,58 @@
 # Introduction
 
-The application will blink a LED and it will transmit bytes over the USB FTDI UART!
-The Lattice IceStick has a FTDI chip that allows it to establish a UART connection over the
-USB connection that is also used to programm the IceStick.
-This example shows how to use this FTDI chip. (It is actually surprisingly very simple! 
-There is a peripheral pin where you can send a signal to and it will be transmitted over the FTDI chip
+The application will implement a simple echo application using the Lattice IceStick
+and the Digilent Bluetooth PMOD (https://digilent.com/shop/pmod-bt2-bluetooth-interface/).
+
+You can plug in the PMOD_BT2 directly into the IceStick. The PMOD interface of both devices
+is pin and voltage level compatible so there is no need for any jumper wires.
+
+The PMOD_BT2 is running a 
+bluetooth stack internally and it has a standard configuration applied by the Digilent.
+This standard configuration makes the PMOD_BT2 start a SPP server which is the 
+Bluetooth Classic way of having a serial connection open, that means a connection
+that allows you to send characters to the communication partner over a Bluetooth Classic
+connection. 
+
+You can connect to the SPP server of the PMOD_BT2 using the Android app "Serial Bluetooth Terminal"
+for testing purposes. You can also use windows or linux to connect to the SPP server by first
+coupling/bonding the PMOD_BT2 to windows/linux. The device the has to show up as a regular
+COM port into which you can send serial data.
+
+Once the connection is established between your cellphone/computer and the SPP
+server on the PMOD_BT2, you can send characters over the SPP connection using the 
+"Serial Bluetooth Terminal" app or any application that can connect to a COM port.
+Windows applications for that are terminal emulators such as YAT, putty, terraterm and many others.
+
+The characters you send are receive by the PMOD_BT2 and they are then put into it's UART interface.
+Every device that connects to the UART interface gets the characters forwarded.
+
+Once the PMOD_BT2 is plugged into the IceStick, the IceStick can talk to the PMOD_BT2 via a 
+UART connection which has to support hardware flow control (CTS/RTS). This UART connection grants
+direct access to the characters that are sent to the PMOD_BT2 module via the SPP connection.
+
+In this application, a module to talk to the PMOD_BT2 over UART by Ed Nutting is used to implement 
+the UART connection with hardware flow control. The PMOD_BT2 verilog module outputs received characters 
+and provides a signal that goes high when a valid character has been received.
+
+Ed Nutting's module also allows you to send characters back to the PMOD_BT2 over the UART connection.
+Once the PMOD_BT2 receives a character it will send that character out to the communication partner
+over Bluetooth using the SPP connection. 
+
+The device is configured in the official example as an echo device which means it does send every
+single character back to the communication partner that is received over the incoming direction.
+In this example, the echo functionality is kept so if you send any data to the PMOD_BT2 you
+should get that data back over the bluetooth connection.
+
+In a sense there is no difference between a UART that is running over a wire-based physical interface
+and the UART that is running over Bluetooth Classic. The UART allows you to send and receive characters
+in a asynchronous fashion, this means you can send and receive at the same time.
+
+In addition to the PMOD_BT2 UART, this application features a second UART that sends out characters
+over the FTDI USB-based UART that the IceStick supports. This second connection was introduced
+to debug the PMOD_BT2 connection. Every character that is received over Bluetooth also is output
+over the FTDI USB based UART. You can connect to the USB-COM port and check if any data is 
+received over the bluetooth connection. Sadly the USB UART has some issues and it does not correctly
+transmit at the moment! But it works in some cases, enough to check the basic functioning of the system.
 
 # Credit
 
@@ -98,7 +146,7 @@ yosys -p "synth_ice40 -top top -blif $(BUILD)/$(PROJ).blif -json $(BUILD)/$(PROJ
 
 ## icepll
 
-tool that allows you to find configuration parameters for your PLL.
+A Tool that allows you to find configuration parameters for your PLL.
 
 Source code is here: https://raw.githubusercontent.com/YosysHQ/icestorm/master/icepll/icepll.cc
 
@@ -135,4 +183,23 @@ DIVF: 66 (7'b1000010)
 DIVQ:  3 (3'b011)
 
 FILTER_RANGE: 1 (3'b001)
+```
+
+Then use these constant bit patterns in the PLL instance declaration:
+
+```
+SB_PLL40_CORE #(
+		.FEEDBACK_PATH("SIMPLE"),
+		.PLLOUT_SELECT("GENCLK"),
+		.DIVR(4'b0000),
+		.DIVF(7'b1000010),
+		.DIVQ(3'b011),
+		.FILTER_RANGE(3'b001)
+	) uut (
+		.LOCK(lock),
+		.RESETB(1'b1),
+		.BYPASS(1'b0),
+		.REFERENCECLK(SYS_CLK),
+		.PLLOUTCORE(clkout)
+	);
 ```
