@@ -3,32 +3,59 @@
 The application will implement a simple echo application using the Lattice IceStick
 and the Digilent Bluetooth PMOD (https://digilent.com/shop/pmod-bt2-bluetooth-interface/).
 
+# The Connection Explained
+
 You can plug in the PMOD_BT2 directly into the IceStick. The PMOD interface of both devices
-is pin and voltage level compatible so there is no need for any jumper wires.
+is pin and voltage level compatible so there is no need for any jumper wires or voltage
+conversion.
 
 The PMOD_BT2 is running a 
-bluetooth stack internally and it has a standard configuration applied by the Digilent.
+bluetooth stack internally and it has a standard configuration applied by the vendor Digilent.
 This standard configuration makes the PMOD_BT2 start a SPP server which is the 
 Bluetooth Classic way of having a serial connection open, that means a connection
 that allows you to send characters to the communication partner over a Bluetooth Classic
-connection. 
+connection. Basically the connection has no protocol defined, it is just a way to stream
+bytes over the connection.
 
 You can connect to the SPP server of the PMOD_BT2 using the Android app "Serial Bluetooth Terminal"
 for testing purposes. You can also use windows or linux to connect to the SPP server by first
-coupling/bonding the PMOD_BT2 to windows/linux. The device the has to show up as a regular
-COM port into which you can send serial data.
+coupling/bonding the PMOD_BT2 to windows/linux. The device then will to show up as a regular
+COM port to which you can send serial data and from which you can read serial data.
 
 Once the connection is established between your cellphone/computer and the SPP
 server on the PMOD_BT2, you can send characters over the SPP connection using the 
 "Serial Bluetooth Terminal" app or any application that can connect to a COM port.
 Windows applications for that are terminal emulators such as YAT, putty, terraterm and many others.
+For Java there are libraries that allow you to connect to the COM port and open a buffered stream
+to send and receive data. For basically any hardware oriented programming language there should be 
+a way to open connections to COM ports on windows.
 
 The characters you send are receive by the PMOD_BT2 and they are then put into it's UART interface.
 Every device that connects to the UART interface gets the characters forwarded.
 
+```
+                                                                                                                       
+  ┌────────────────┐      ┌────────────────┐     ┌──────────────────┐                            ┌─────────────────┐   
+  │                │      │                │     │                  │     Bluetooth Classic      │                 │   
+  │                │      │                │     │                  │     Connection             │                 │   
+  │ Verilog Code   │      │   Ed Nutting's │     │                  │    ┌──────────────────┐    │  Communication  │   
+  │                ├─────►│                ├────►│   PMOD BT2       ├────┼──────────────────┼────►                 │   
+  │   on the       │      │   module       │     │                  │    │   SPP Connection │    │                 │   
+  │                │◄─────┤                │◄────┤   hardware       ◄────┼──────────────────┼────┤  Partner        │   
+  │ IceStick       │      │                │     │                  │    └──────────────────┘    │                 │   
+  │                │      │                │     │   PMOD module    │                            │                 │   
+  │                │      │                │     │                  │                            │                 │   
+  └────────────────┘      └────────────────┘     └──────────────────┘                            └─────────────────┘   
+                                                                                                                       
+```
+
+# Implementation on the IceStick
+
 Once the PMOD_BT2 is plugged into the IceStick, the IceStick can talk to the PMOD_BT2 via a 
 UART connection which has to support hardware flow control (CTS/RTS). This UART connection grants
-direct access to the characters that are sent to the PMOD_BT2 module via the SPP connection.
+direct access to the characters that are received by the PMOD_BT2 module over the SPP connection
+because the PMOD_BT2 module will directly forward all data between the UART and the SPP connection
+in both directions without any modification to the data.
 
 In this application, a module to talk to the PMOD_BT2 over UART by Ed Nutting is used to implement 
 the UART connection with hardware flow control. The PMOD_BT2 verilog module outputs received characters 
