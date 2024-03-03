@@ -3,6 +3,22 @@
 The application will implement a simple echo application using the Lattice IceStick
 and the Digilent Bluetooth PMOD (https://digilent.com/shop/pmod-bt2-bluetooth-interface/).
 
+
+# Credit
+
+This code is taken from https://www.youtube.com/@msrivastava
+
+I found the code via this forum post: https://github.com/YosysHQ/icestorm/issues/51
+
+The original repository is here: https://github.com/nesl/ice40_examples/tree/master/uart_transmission
+
+The change I made is that instead of sending data as fast as possible,
+the modified code sends a character per sector.
+
+IcePll: https://raw.githubusercontent.com/YosysHQ/icestorm/master/icepll/icepll.cc
+
+Ed Nutting's BT2 pmod module: https://github.com/EdNutting/PMOD/blob/master/PMOD.srcs/sources_1/new/Top.v
+
 # The Connection Explained
 
 You can plug in the PMOD_BT2 directly into the IceStick. The PMOD interface of both devices
@@ -108,16 +124,7 @@ in this example. Yosys takes care of implementing the PLL for you automatically!
 The clock that comes out of the PLL is a 100 Mhz clock and it is put into Ed Nutting's Bluetooth
 module.
 
-# Credit
 
-This code is taken from https://www.youtube.com/@msrivastava
-
-I found the code via this forum post: https://github.com/YosysHQ/icestorm/issues/51
-
-The original repository is here: https://github.com/nesl/ice40_examples/tree/master/uart_transmission
-
-The change I made is that instead of sending data as fast as possible,
-the modified code sends a character per sector.
 
 # APIO Driver Installation
 
