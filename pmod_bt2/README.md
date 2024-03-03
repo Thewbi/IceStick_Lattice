@@ -81,6 +81,33 @@ over the FTDI USB based UART. You can connect to the USB-COM port and check if a
 received over the bluetooth connection. Sadly the USB UART has some issues and it does not correctly
 transmit at the moment! But it works in some cases, enough to check the basic functioning of the system.
 
+## PLL
+
+In order to run Ed Nutting's bluetooth module, a 100 Mhz clock is required.
+The IceStick features a 12 Mhz hardware clock. In order to produce a 100 Mhz clock, a PLL
+(Phase Locked Loop) is used. The Phase Locked Loop is used by computing the parameters for
+the PLL that will transform the 12 Mhz clock into a 100 Mhz clock. The parameters can be 
+computed using this tool: https://raw.githubusercontent.com/YosysHQ/icestorm/master/icepll/icepll.cc
+
+Since the source code for icepll uses ANSI C++ code only, it should be pretty simple to compile
+the .cc file using the gcc compiler on any system. I used Cygwin on windows to compile the application.
+
+Running icepll with the following parameters
+
+```
+icepll.exe -i 12 -o 100
+```
+
+will give you the constants to put into the PLL.
+The approach is explained below.
+
+The Yosys tools run by apio, recoginze the instantiation of a PLL and they internally generate
+the code to use the PLL on the IceStick. Therefore you will not find a PLL implementation anywhere
+in this example. Yosys takes care of implementing the PLL for you automatically!
+
+The clock that comes out of the PLL is a 100 Mhz clock and it is put into Ed Nutting's Bluetooth
+module.
+
 # Credit
 
 This code is taken from https://www.youtube.com/@msrivastava
