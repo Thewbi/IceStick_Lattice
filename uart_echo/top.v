@@ -4,7 +4,7 @@ module top (
     // all LEDs
     output led1,
     // UART lines
-    output ftdi_rx,
+    input ftdi_rx,
     output ftdi_tx
 );
 
@@ -21,13 +21,13 @@ module top (
     reg toggle_second = 1'b0;
     reg toggle_store = 1'b0;
 
-    reg [7:0] tx_byte = 8'h41;
+    reg [7:0] tx_byte = 8'h00;
     reg tx_DataValid = 1'b0;
     wire tx_Active;
     wire tx_Done;
 
     // input       i_Clock,     // clock
-    // input       i_Tx_DV,     // data valid
+    // input       i_Tx_DV,     // data valid, pull high to start sending whatever is in i_Tx_Byte
     // input [7:0] i_Tx_Byte,   // payload bits (byte) to send
     // output      o_Tx_Active, // high during transmission
     // output reg  o_Tx_Serial, // this is the port connected to the UART TX line
@@ -40,6 +40,32 @@ module top (
         .o_Tx_Serial(ftdi_tx),
         .o_Tx_Done(tx_Done)
     );
+
+    // UART RX
+    wire rx_DV;
+    wire [7:0] rx_byte;
+    reg [7:0] rx_byte_reg = 8'h00;
+
+    //reg [7:0] input_buffer [0:9];
+    //reg [7:0] input_buffer_index = 1'b0;
+
+    // input        i_Clock,        // clock
+    // input        i_Rx_Serial,    // this is the port connected to the UART TX line
+    // output       o_Rx_DV,        // data valid, goes high for a single clock tick after reception
+    // output [7:0] o_Rx_Byte       // data received
+    uart_rx #(.CLKS_PER_BIT(104)) urx(
+        .i_Clock(hwclk),
+        .i_Rx_Serial(ftdi_rx),
+        .o_Rx_DV(rx_DV),
+        .o_Rx_Byte(rx_byte)
+    );
+
+    //assign rx_byte_reg = rx_byte;
+    //always @(posedge hwclk)
+    always @(posedge rx_DV)
+    begin
+        rx_byte_reg = rx_byte;
+    end
 
     // Low speed clock generation
     always @ (posedge hwclk)
@@ -61,40 +87,63 @@ module top (
 
     end
 
-    // when the slow clock has a posedge
-    always @(posedge clk_1)
-    begin
-        // toggle a LED
-        ledval <= ~ledval;
+    // // when the slow clock has a posedge
+    // always @(posedge clk_1)
+    // begin
+    //     // toggle a LED
+    //     ledval <= ~ledval;
 
-        // send a character
-        //tx_DataValid <= 1'b1;
+    //     // send a character
+    //     //tx_DataValid <= 1'b1;
 
-        // trigger an action in the UART_TX block
-        toggle_second <= ~toggle_second;
-    end
+    //     // trigger an action in the UART_TX block
+    //     toggle_second <= ~toggle_second;
+    // end
 
-    // UART_TX block
-    always @(posedge hwclk or posedge tx_Done)
+    // // UART_TX block
+    // always @(posedge hwclk or posedge tx_Done)
+    // begin
+    //     if (tx_Done == 1)
+    //     begin
+    //         tx_DataValid <= 1'b0;
+    //     end
+    //     else
+    //     begin
+    //         if (toggle_store != toggle_second)
+    //         begin
+    //             tx_DataValid <= 1'b1;
+    //             toggle_store <= toggle_second;
+    //         end
+    //     end
+    // end
+
+    always @(posedge tx_Done or posedge rx_DV)
     begin
         if (tx_Done == 1)
         begin
-            tx_DataValid <= 1'b0;
+            tx_DataValid = 1'b0;
         end
-        else
+        // else
+        // begin
+        //     if (rx_DV == 1'b1)
+        //     begin
+        //         tx_byte = rx_byte_reg;
+        //         tx_DataValid = 1'b1;
+        //     end
+        // end
+        else if (rx_DV == 1'b1)
         begin
-            if (toggle_store != toggle_second)
-            begin
-                tx_DataValid <= 1'b1;
-
-                toggle_store <= toggle_second;
-            end
+            //tx_byte = rx_byte_reg;
+            tx_byte = rx_byte;
+            //tx_byte = 8'h41;
+            tx_DataValid = 1'b1;
         end
     end
 
-    // always @(posedge tx_Done)
+    // always @(posedge rx_DV)
     // begin
-    //     tx_DataValid <= 1'b0;
+    //     // toggle a LED
+    //     ledval <= ~ledval;
     // end
 
 endmodule

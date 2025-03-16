@@ -1,13 +1,13 @@
 /* Top level module for keypad + UART demo */
 module top (
     // input hardware clock (12 MHz)
-    hwclk, 
+    hwclk,
     // all LEDs
     //led1,
     // UART lines
-    //ftdi_tx, 
+    //ftdi_tx,
 
-    TODO: 
+    TODO:
     1. list the pmod pins here so that the TTL USB adapter will be able to receive
     Make sure the pins are connected to the pmod according to the .pcf file!
 
@@ -16,7 +16,7 @@ module top (
     // TxD
     TxD_ser
 
-    2. TTL adapte löten
+    2. TTL adapter löten
 
 
 );
