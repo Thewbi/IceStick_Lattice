@@ -44,10 +44,6 @@ module top (
     // UART RX
     wire rx_DV;
     wire [7:0] rx_byte;
-    reg [7:0] rx_byte_reg = 8'h00;
-
-    //reg [7:0] input_buffer [0:9];
-    //reg [7:0] input_buffer_index = 1'b0;
 
     // input        i_Clock,        // clock
     // input        i_Rx_Serial,    // this is the port connected to the UART TX line
@@ -60,90 +56,17 @@ module top (
         .o_Rx_Byte(rx_byte)
     );
 
-    //assign rx_byte_reg = rx_byte;
-    //always @(posedge hwclk)
-    always @(posedge rx_DV)
-    begin
-        rx_byte_reg = rx_byte;
-    end
-
-    // Low speed clock generation
-    always @ (posedge hwclk)
-    begin
-
-        // /* generate 9600 Hz clock (= baudrate) */
-        // cntr_9600 <= cntr_9600 + 1;
-        // if (cntr_9600 == period_9600) begin
-        //     clk_9600 <= ~clk_9600;
-        //     cntr_9600 <= 32'b0;
-        // end
-
-        // generate 1 Hz clock
-        cntr_1 <= cntr_1 + 1;
-        if (cntr_1 == period_1) begin
-            clk_1 <= ~clk_1;
-            cntr_1 <= 32'b0;
-        end
-
-    end
-
-    // // when the slow clock has a posedge
-    // always @(posedge clk_1)
-    // begin
-    //     // toggle a LED
-    //     ledval <= ~ledval;
-
-    //     // send a character
-    //     //tx_DataValid <= 1'b1;
-
-    //     // trigger an action in the UART_TX block
-    //     toggle_second <= ~toggle_second;
-    // end
-
-    // // UART_TX block
-    // always @(posedge hwclk or posedge tx_Done)
-    // begin
-    //     if (tx_Done == 1)
-    //     begin
-    //         tx_DataValid <= 1'b0;
-    //     end
-    //     else
-    //     begin
-    //         if (toggle_store != toggle_second)
-    //         begin
-    //             tx_DataValid <= 1'b1;
-    //             toggle_store <= toggle_second;
-    //         end
-    //     end
-    // end
-
     always @(posedge tx_Done or posedge rx_DV)
     begin
         if (tx_Done == 1)
         begin
             tx_DataValid = 1'b0;
         end
-        // else
-        // begin
-        //     if (rx_DV == 1'b1)
-        //     begin
-        //         tx_byte = rx_byte_reg;
-        //         tx_DataValid = 1'b1;
-        //     end
-        // end
         else if (rx_DV == 1'b1)
         begin
-            //tx_byte = rx_byte_reg;
             tx_byte = rx_byte;
-            //tx_byte = 8'h41;
             tx_DataValid = 1'b1;
         end
     end
-
-    // always @(posedge rx_DV)
-    // begin
-    //     // toggle a LED
-    //     ledval <= ~ledval;
-    // end
 
 endmodule
