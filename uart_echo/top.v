@@ -6,11 +6,6 @@ module top (
     output ftdi_tx
 );
 
-    // 1 Hz clock generation (from 12 MHz)
-    //reg clk_1 = 0;
-    //reg [31:0] cntr_1 = 32'b0;
-    //parameter period_1 = 6000000; // 120000000 / 2 = 600000. Means the clock signal goes low and high for 600000 ticks each per second
-
     reg [7:0] tx_byte = 8'h00;
     reg tx_DataValid = 1'b0;
     wire tx_Active;
@@ -49,41 +44,32 @@ module top (
         .o_Rx_Byte(rx_byte)
     );
 
-    //always @(posedge rx_DV or posedge tx_Done) // combined block because this block is the only block updating buffer_index
     always @(posedge hwclk)
-    //always @(negedge tx_Done, negedge tx_Done)
     begin
         if (rx_DataValid == 1'b1) begin
             buffer[buffer_index] = rx_byte;
-            buffer_index = buffer_index + 8'h01;
+            tx_byte = rx_byte;
+            if (buffer_index < 4)
+            begin
+                buffer_index = buffer_index + 8'h01;
+            end
         end
-        // if (tx_Done == 1'b1) begin
-        //     buffer_index = buffer_index + 8'h01;
-        //     tx_byte = buffer[buffer_index];
-        //     tx_DataValid = 1'b1;
-        //     // if (buffer_index > 8'h00) begin
-        //     //     tx_byte = buffer[buffer_index];
-        //     //     tx_DataValid = 1'b1;
-        //     //     buffer_index = buffer_index - 8'h01;
-        //     // end
-        // end
+
         if (tx_Done == 1'b1) begin
-            buffer_index = buffer_index - 8'h01;
+            if (buffer_index == 4)
+            begin
+                buffer_index = buffer_index - 8'h01;
+            end
+            if (buffer_index != 0) begin
+                buffer_index = buffer_index - 8'h01;
+            end
             tx_byte = buffer[buffer_index];
         end
     end
 
-    // always @(negedge tx_Done)
-    // begin
-    //     buffer_index = buffer_index - 8'h01;
-    //     tx_byte = buffer[buffer_index];
-    // end
-
     always @(posedge hwclk)
     begin
         if (buffer_index == 8'h04) begin
-            // buffer_index = buffer_index - 8'h01;
-            // tx_byte = buffer[buffer_index];
             tx_DataValid = 1'b1;
         end
         if (buffer_index == 8'h00) begin

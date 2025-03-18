@@ -78,9 +78,10 @@ module top_testbench();
 
         //#104
         #208
-        ftdi_rx = 1; // stop bit is high
+        ftdi_rx = 1; // stop bit is high, idle is high
 
 
+        #5000
 
 
         //#104
@@ -116,10 +117,10 @@ module top_testbench();
 
         //#104
         #208
-        ftdi_rx = 1; // stop bit is high
+        ftdi_rx = 1; // stop bit is high, idle is high
 
 
-
+        #5000
 
 
 
@@ -156,10 +157,10 @@ module top_testbench();
 
         //#104
         #208
-        ftdi_rx = 1; // stop bit is high
+        ftdi_rx = 1; // stop bit is high, idle is high
 
 
-
+        #5000
 
 
         //#104
@@ -195,9 +196,172 @@ module top_testbench();
 
         //#104
         #208
-        ftdi_rx = 1; // stop bit is high
+        ftdi_rx = 1; // stop bit is high, idle is high
 
-        #20000 $finish();
+        #5000
+
+
+        //
+        // second iteration
+        //
+
+
+        //#104
+        #208
+        ftdi_rx = 0; // start bit pulls line low
+
+        // send bits: 01010101 + stop bit == 0x55 == 85dec == a plus one stop bit
+
+        //#104
+        #208 // use twice the ticks since the clock goes low for one tick and high for another tick. This is then one clock cycle
+        ftdi_rx = 0; // index 0
+        //#104
+        #208
+        ftdi_rx = 0; // index 1
+        //#104
+        #208
+        ftdi_rx = 1; // index 2
+        //#104
+        #208
+        ftdi_rx = 0; // index 3
+        //#104
+        #208
+        ftdi_rx = 0; // index 4
+        //#104
+        #208
+        ftdi_rx = 0; // index 5
+        //#104
+        #208
+        ftdi_rx = 0; // index 6
+        //#104
+        #208
+        ftdi_rx = 0; // index 7
+
+        //#104
+        #208
+        ftdi_rx = 1; // stop bit is high, idle is high
+
+
+        #5000
+
+
+        //#104
+        #208
+        ftdi_rx = 0; // start bit pulls line low
+
+        // send bits: 01010101 + stop bit == 0x55 == 85dec == a plus one stop bit
+
+        //#104
+        #208 // use twice the ticks since the clock goes low for one tick and high for another tick. This is then one clock cycle
+        ftdi_rx = 1; // index 0
+        //#104
+        #208
+        ftdi_rx = 0; // index 1
+        //#104
+        #208
+        ftdi_rx = 1; // index 2
+        //#104
+        #208
+        ftdi_rx = 0; // index 3
+        //#104
+        #208
+        ftdi_rx = 0; // index 4
+        //#104
+        #208
+        ftdi_rx = 0; // index 5
+        //#104
+        #208
+        ftdi_rx = 0; // index 6
+        //#104
+        #208
+        ftdi_rx = 0; // index 7
+
+        //#104
+        #208
+        ftdi_rx = 1; // stop bit is high, idle is high
+
+
+        #5000
+
+
+
+        //#104
+        #208
+        ftdi_rx = 0; // start bit pulls line low
+
+        // send bits: 01010101 + stop bit == 0x55 == 85dec == a plus one stop bit
+
+        //#104
+        #208 // use twice the ticks since the clock goes low for one tick and high for another tick. This is then one clock cycle
+        ftdi_rx = 0; // index 0
+        //#104
+        #208
+        ftdi_rx = 1; // index 1
+        //#104
+        #208
+        ftdi_rx = 1; // index 2
+        //#104
+        #208
+        ftdi_rx = 0; // index 3
+        //#104
+        #208
+        ftdi_rx = 0; // index 4
+        //#104
+        #208
+        ftdi_rx = 0; // index 5
+        //#104
+        #208
+        ftdi_rx = 0; // index 6
+        //#104
+        #208
+        ftdi_rx = 0; // index 7
+
+        //#104
+        #208
+        ftdi_rx = 1; // stop bit is high, idle is high
+
+
+        #5000
+
+
+        //#104
+        #208
+        ftdi_rx = 0; // start bit pulls line low
+
+        // send bits: 01010101 + stop bit == 0x55 == 85dec == a plus one stop bit
+
+        //#104
+        #208 // use twice the ticks since the clock goes low for one tick and high for another tick. This is then one clock cycle
+        ftdi_rx = 1; // index 0
+        //#104
+        #208
+        ftdi_rx = 1; // index 1
+        //#104
+        #208
+        ftdi_rx = 1; // index 2
+        //#104
+        #208
+        ftdi_rx = 0; // index 3
+        //#104
+        #208
+        ftdi_rx = 0; // index 4
+        //#104
+        #208
+        ftdi_rx = 0; // index 5
+        //#104
+        #208
+        ftdi_rx = 0; // index 6
+        //#104
+        #208
+        ftdi_rx = 0; // index 7
+
+        //#104
+        #208
+        ftdi_rx = 1; // stop bit is high, idle is high
+
+        #5000
+
+        #40000 $finish();
     end
 
     // // when data goes high for a single tick print the data
