@@ -1,30 +1,23 @@
 module top (
     // input hardware clock (12 MHz)
     input hwclk,
-    // all LEDs
-    output led1,
     // UART lines
     input ftdi_rx,
     output ftdi_tx
 );
 
     // 1 Hz clock generation (from 12 MHz)
-    reg clk_1 = 0;
-    reg [31:0] cntr_1 = 32'b0;
-    parameter period_1 = 6000000; // 120000000 / 2 = 600000. Means the clock signal goes low and high for 600000 ticks each per second
-
-    // LED
-    reg ledval = 0;
-    assign led1 = ledval;
-
-    // UART TX
-    reg toggle_second = 1'b0;
-    reg toggle_store = 1'b0;
+    //reg clk_1 = 0;
+    //reg [31:0] cntr_1 = 32'b0;
+    //parameter period_1 = 6000000; // 120000000 / 2 = 600000. Means the clock signal goes low and high for 600000 ticks each per second
 
     reg [7:0] tx_byte = 8'h00;
     reg tx_DataValid = 1'b0;
     wire tx_Active;
     wire tx_Done;
+
+    reg [7:0] buffer [0:3];
+    reg [7:0] buffer_index = 8'h00;
 
     // input       i_Clock,     // clock
     // input       i_Tx_DV,     // data valid, pull high to start sending whatever is in i_Tx_Byte
@@ -42,7 +35,7 @@ module top (
     );
 
     // UART RX
-    wire rx_DV;
+    wire rx_DataValid;
     wire [7:0] rx_byte;
 
     // input        i_Clock,        // clock
@@ -52,20 +45,44 @@ module top (
     uart_rx #(.CLKS_PER_BIT(104)) urx(
         .i_Clock(hwclk),
         .i_Rx_Serial(ftdi_rx),
-        .o_Rx_DV(rx_DV),
+        .o_Rx_DV(rx_DataValid),
         .o_Rx_Byte(rx_byte)
     );
 
-    always @(posedge tx_Done or posedge rx_DV)
+    //always @(posedge rx_DV or posedge tx_Done) // combined block because this block is the only block updating buffer_index
+    always @(posedge hwclk)
     begin
-        if (tx_Done == 1)
-        begin
-            tx_DataValid = 1'b0;
+        if (rx_DataValid == 1'b1) begin
+            buffer[buffer_index] = rx_byte;
+            buffer_index = buffer_index + 8'h01;
         end
-        else if (rx_DV == 1'b1)
-        begin
-            tx_byte = rx_byte;
+        // if (tx_Done == 1'b1) begin
+        //     buffer_index = buffer_index + 8'h01;
+        //     tx_byte = buffer[buffer_index];
+        //     tx_DataValid = 1'b1;
+        //     // if (buffer_index > 8'h00) begin
+        //     //     tx_byte = buffer[buffer_index];
+        //     //     tx_DataValid = 1'b1;
+        //     //     buffer_index = buffer_index - 8'h01;
+        //     // end
+        // end
+    end
+
+    always @(negedge tx_Done)
+    begin
+        buffer_index = buffer_index - 8'h01;
+        tx_byte = buffer[buffer_index];
+    end
+
+    always @(posedge hwclk)
+    begin
+        if (buffer_index == 8'h04) begin
+            buffer_index = buffer_index - 8'h01;
+            tx_byte = buffer[buffer_index];
             tx_DataValid = 1'b1;
+        end
+        if (buffer_index == 8'h00) begin
+            tx_DataValid = 1'b0;
         end
     end
 

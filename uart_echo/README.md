@@ -22,6 +22,8 @@ iceprog -d i:0x0403:0x6010:0 build/aout.bin
 
 ```
 C:\iverilog\bin\iverilog.exe -s top_testbench -o build/aout.vvp top_testbench.v top.v uart_tx.v uart_rx.v
+C:\iverilog\bin\iverilog.exe -s uart_rx_testbench -o build/aout.vvp top_testbench.v top.v uart_tx.v uart_rx.v
+
 clear && C:\iverilog\bin\vvp.exe build/aout.vvp
 gtkwave build/aout.vcd
 
