@@ -51,6 +51,7 @@ module top (
 
     //always @(posedge rx_DV or posedge tx_Done) // combined block because this block is the only block updating buffer_index
     always @(posedge hwclk)
+    //always @(negedge tx_Done, negedge tx_Done)
     begin
         if (rx_DataValid == 1'b1) begin
             buffer[buffer_index] = rx_byte;
@@ -66,19 +67,23 @@ module top (
         //     //     buffer_index = buffer_index - 8'h01;
         //     // end
         // end
+        if (tx_Done == 1'b1) begin
+            buffer_index = buffer_index - 8'h01;
+            tx_byte = buffer[buffer_index];
+        end
     end
 
-    always @(negedge tx_Done)
-    begin
-        buffer_index = buffer_index - 8'h01;
-        tx_byte = buffer[buffer_index];
-    end
+    // always @(negedge tx_Done)
+    // begin
+    //     buffer_index = buffer_index - 8'h01;
+    //     tx_byte = buffer[buffer_index];
+    // end
 
     always @(posedge hwclk)
     begin
         if (buffer_index == 8'h04) begin
-            buffer_index = buffer_index - 8'h01;
-            tx_byte = buffer[buffer_index];
+            // buffer_index = buffer_index - 8'h01;
+            // tx_byte = buffer[buffer_index];
             tx_DataValid = 1'b1;
         end
         if (buffer_index == 8'h00) begin

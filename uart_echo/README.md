@@ -27,5 +27,10 @@ C:\iverilog\bin\iverilog.exe -s uart_rx_testbench -o build/aout.vvp top_testbenc
 clear && C:\iverilog\bin\vvp.exe build/aout.vvp
 gtkwave build/aout.vcd
 
+
+C:\iverilog\bin\iverilog.exe -s top_testbench -o build/aout.vvp top_testbench.v top.v uart_tx.v uart_rx.v
+C:\iverilog\bin\vvp.exe build/aout.vvp
+gtkwave build/aout.vcd
+
 C:\iverilog\bin\vvp.exe riscv.vvp -lxt2
 ```

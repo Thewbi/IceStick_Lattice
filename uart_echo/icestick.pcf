@@ -25,7 +25,7 @@
 
 # ------------ Green led -----------------------------------------------------
 #set_io --warn-no-port D5 95
-set_io --warn-no-port led1 95
+#set_io --warn-no-port led1 95
 
 # ------------ IrDA ----------------------------------------------------------
 #set_io --warn-no-port IrDA_TX 105
