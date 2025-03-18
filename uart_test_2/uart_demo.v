@@ -29,13 +29,18 @@ module top(
 	);
 
 	wire reset = 0;
-	reg transmit;
+	reg transmit = 0;
 	reg [7:0] tx_byte;
 	wire received;
 	wire [7:0] rx_byte;
 	wire is_receiving;
 	wire is_transmitting;
 	wire recv_error;
+
+    reg [7:0] counter = 8'b0;
+    reg [7:0] buffer [3:0];
+    reg start = 0;
+    reg waiter = 1;
 
 	assign LED4 = recv_error;
 	assign {LED3, LED2, LED1, LED0} = rx_byte[7:4];
@@ -59,12 +64,78 @@ module top(
 	);
 
 	always @(posedge iCE_CLK) begin
-		if (received)
+
+        waiter = ~waiter;
+
+        if (transmit == 1) begin
+            transmit = 0;
+        end
+
+		if (received && waiter)
         begin
-			tx_byte <= rx_byte;
-			transmit <= 1;
-		end else begin
-			transmit <= 0;
+
+
+
+            $display("received");
+
+            buffer[counter] = rx_byte;
+
+            counter = counter + 1;
+
+            $display("received counter: %d", counter);
+
+            if (counter == 4)
+            begin
+                 counter = counter - 1;
+
+                 tx_byte = buffer[counter];
+                 transmit = 1;
+
+                start = 1;
+            end
 		end
+        //  else begin
+		// 	transmit <= 0;
+		// end
+
+        // if (counter <= 2 && start) begin
+        //     $display("is_transmitting: %d, counter: %d, start: %d", is_transmitting, counter, start);
+        // end
+
+        if (is_transmitting == 0 && counter >= 0 && start == 1)
+        begin
+            //$display("transmit");
+
+            if (counter > 0) begin
+
+
+
+             $display("transmit counter: %d", counter);
+
+
+
+             tx_byte = buffer[counter];
+             transmit = 1;
+
+             counter = counter - 1;
+            end
+            else
+            begin
+                transmit = 0;
+            end
+        end
+
+        // if (counter == 0)
+        // begin
+        //     //$display("stop");
+
+        //     start = 0;
+        //     transmit = 0;
+        // end
 	end
+
+    // always @(negedge is_transmitting)
+    // begin
+    //     //counter = counter - 1;
+    // end
 endmodule

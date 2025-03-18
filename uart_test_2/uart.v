@@ -154,6 +154,7 @@
 
         case (recv_state)
             RX_IDLE: begin
+                //$display("RX_IDLE");
                 // A low pulse on the receive line indicates the
                 // start of data.
                 if (!rx) begin
@@ -164,6 +165,7 @@
             end
 
             RX_CHECK_START: begin
+                //$display("RX_CHECK_START");
                 if (!rx_clk) begin
                     // Check the pulse is still there
                     if (!rx) begin
@@ -183,6 +185,7 @@
             end
 
             RX_SAMPLE_BITS: begin
+                //$display("RX_SAMPLE_BITS");
                 // sample the rx line multiple times
                 if (!rx_clk) begin
                     if (rx) begin
@@ -195,6 +198,7 @@
             end
 
             RX_READ_BITS: begin
+                //$display("RX_READ_BITS");
                 if (!rx_clk) begin
                     // Should be finished sampling the pulse here.
                     // Update and prep for next
@@ -219,6 +223,7 @@
             end
 
             RX_CHECK_STOP: begin
+                //$display("RX_CHECK_STOP");
                 if (!rx_clk) begin
                     // Should resume half-way through the stop bit
                     // This should be high - if not, reject the
@@ -230,6 +235,7 @@
 
 
             RX_ERROR: begin
+                //$display("RX_ERROR");
                 // There was an error receiving.
                 // Raises the recv_error flag for one clock
                 // cycle while in this state and then waits
@@ -242,6 +248,7 @@
     // why is this state needed?  Why not go to idle and wait for next?
 
             RX_DELAY_RESTART: begin
+                //$display("RX_DELAY_RESTART");
                 // Waits a set number of cycles before accepting
                 // another transmission.
                 recv_state = rx_clk ? RX_DELAY_RESTART : RX_IDLE;
@@ -249,6 +256,7 @@
 
 
             RX_RECEIVED: begin
+                $display("RX_RECEIVED");
                 // Successfully received a byte.
                 // Raises the received flag for one clock
                 // cycle while in this state.
