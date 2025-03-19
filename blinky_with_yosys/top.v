@@ -1,6 +1,6 @@
 // Blink an LED provided an input clock
 /* module */
-module top (SYS_CLK, LED5);
+module top(SYS_CLK, LED5);
 
     /* I/O */
     input SYS_CLK;

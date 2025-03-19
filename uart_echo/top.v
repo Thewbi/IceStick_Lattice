@@ -49,15 +49,13 @@ module top (
         if (rx_DataValid == 1'b1) begin
             buffer[buffer_index] = rx_byte;
             tx_byte = rx_byte;
-            if (buffer_index < 4)
-            begin
+            if (buffer_index < 4) begin
                 buffer_index = buffer_index + 8'h01;
             end
         end
 
         if (tx_Done == 1'b1) begin
-            if (buffer_index == 4)
-            begin
+            if (buffer_index == 4) begin
                 buffer_index = buffer_index - 8'h01;
             end
             if (buffer_index != 0) begin
